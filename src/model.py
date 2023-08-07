@@ -137,16 +137,6 @@ class Prices:
             return False
         return over <= self.last_gap_rate
 
-    def has_rate_over_in_days(self, *, over: float, days: int) -> bool:
-        from_ = self.date_before(self.last_date, days)
-        for date in self.dates_from(from_):
-            rate = self._get_rate_by_date(date=date)
-            if rate is None:
-                continue
-            if rate >= over:
-                return True
-        return False
-
     def has_trade_volume_over_in_days(self, *, over: int, days: int) -> bool:
         from_ = self.date_before(self.last_date, days)
         prices = self._get_all_by_from(from_)
@@ -158,9 +148,15 @@ class Prices:
     def has_rate_and_trade_volume_over_in_days(
         self, *, rate_over: float, volume_over: int, days: int
     ) -> bool:
-        return self.has_rate_over_in_days(
-            over=rate_over, days=days
-        ) and self.has_trade_volume_over_in_days(over=volume_over, days=days)
+        from_ = self.date_before(self.last_date, days)
+        for date in self.dates_from(from_):
+            rate = self._get_rate_by_date(date=date)
+            price = self._get_by_date(date=date)
+            if rate is None or price is None:
+                continue
+            if rate >= rate_over and price.trade_volume >= volume_over:
+                return True
+        return False
 
     def is_in_regular_arrangement(self) -> bool:
         if len(self.prices) < 120:
