@@ -135,7 +135,7 @@ class Prices:
     def is_gap_rate_over(self, *, over: float) -> bool:
         if self.last_gap_rate is None:
             return False
-        return over >= self.last_gap_rate
+        return over <= self.last_gap_rate
 
     def has_rate_over_in_days(self, *, over: float, days: int) -> bool:
         from_ = self.date_before(self.last_date, days)
@@ -179,16 +179,21 @@ class Prices:
 
     def _get_rate_by_date(self, *, date: datetime.date) -> float | None:
         price = self._get_by_date(date)
-        if price is None:
+        previous_price = self._get_by_date(self.date_before(date, 1))
+        if price is None or previous_price is None:
             return None
-        return round((price.close - price.open) / price.open * 100, 2)
+        return round(
+            (price.close - previous_price.close) / previous_price.close * 100, 2
+        )
 
     def _get_gap_rate_by_date(self, *, date: datetime.date) -> float | None:
         price = self._get_by_date(date)
         previous_price = self._get_by_date(self.date_before(date, 1))
         if price is None or previous_price is None:
             return None
-        return round((previous_price.close - price.open) / price.open * 100, 2)
+        return round(
+            (price.open - previous_price.close) / previous_price.close * 100, 2
+        )
 
     def _get_all_by_from(self, from_: datetime.date) -> list[Price]:
         return self._get_all_by_from_and_to(from_, self.last_date)
