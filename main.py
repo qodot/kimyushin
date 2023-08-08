@@ -1,5 +1,6 @@
 import csv
 import datetime
+import os
 
 import typer
 
@@ -12,6 +13,8 @@ def main(date: str) -> None:
 
     filename_1 = f"results/{date_.strftime('%Y%m%d')}_condition_1.csv"
     filename_2 = f"results/{date_.strftime('%Y%m%d')}_condition_2.csv"
+    os.makedirs(os.path.dirname(filename_1), exist_ok=True)
+    os.makedirs(os.path.dirname(filename_2), exist_ok=True)
     csv_writer_1 = csv.writer(open(filename_1, "w"))
     csv_writer_2 = csv.writer(open(filename_2, "w"))
     header = [

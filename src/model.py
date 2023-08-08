@@ -74,6 +74,7 @@ class Prices:
         self.dates = dates
 
         filename = f"tickers/prices/{ticker}.csv"
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
         if os.path.exists(filename):
             df = pandas.read_csv(filename, index_col=0)
         else:

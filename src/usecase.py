@@ -9,6 +9,7 @@ from src.model import MARKETS, Stock
 
 def get_all_stocks(*, dates: list[datetime.date]) -> list[Stock]:
     filename = f"tickers/list/{dates[0].strftime('%Y%m%d')}.csv"
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
     if not os.path.exists(filename):
         csv_writer = csv.writer(open(filename, "w"))
         csv_writer.writerow(["ticker", "name", "market"])
