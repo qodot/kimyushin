@@ -203,6 +203,7 @@ class Prices:
     def _get_moving_average(self, *, day: int) -> float:
         from_ = self.date_before(self.last_date, day)
         prices = self._get_all_by_from(from_)
+        prices = prices[1:]  # remove today
         return round(sum([price.close for price in prices]) / day, 2)
 
 
